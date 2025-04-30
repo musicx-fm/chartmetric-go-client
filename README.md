@@ -11,3 +11,11 @@ Golang client for [Chartmetric API](https://api.chartmetric.com/apidoc/).
 ```
 go get github.com/musicx-fm/chartmetric-go-client
 ```
+
+## Usage
+
+```go
+import "github.com/musicx-fm/chartmetric-go-client"
+
+cmClient := chartmetric.NewClient("<your-refresh-token>")
+```
