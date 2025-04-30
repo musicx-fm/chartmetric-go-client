@@ -1,0 +1,25 @@
+name: Run automated tests
+
+on:
+  pull_request:
+    branches:
+      - '*'
+    paths:
+      - '**.go'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+    
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '>=1.24'
+
+      - name: Run tests
+        run: |
+          make test
