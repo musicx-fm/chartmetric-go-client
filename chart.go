@@ -112,7 +112,7 @@ const (
 type GetChartTracksSpotifyParams struct {
 	Date        time.Time
 	CountryCode string
-	ChartType   ChartTypeSpotify
+	Type        ChartTypeSpotify
 	Interval    ChartIntervalSpotify
 	Offset      Optional[int]
 	Latest      Optional[bool]
@@ -175,7 +175,7 @@ func (c *Client) GetChartTracksSpotify(ctx context.Context, params GetChartTrack
 	queryParams := make(map[string]any)
 	queryParams["date"] = params.Date.Format(DateFormat)
 	queryParams["country_code"] = params.CountryCode
-	queryParams["type"] = params.ChartType
+	queryParams["type"] = params.Type
 	queryParams["interval"] = params.Interval
 	if params.Offset != nil {
 		queryParams["offset"] = *params.Offset
