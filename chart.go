@@ -165,7 +165,7 @@ type GetChartTracksSpotifyResponse struct {
 	} `json:"obj"`
 }
 
-// GetChartTracksSpotify fetches insights for tracks on Spotify Charts.
+// GetChartTracksSpotify fetches insights for tracks on Spotify charts.
 // See https://api.chartmetric.com/apidoc/#api-Charts-GetSpotifyTracksChart-1.0.0.
 func (c *Client) GetChartTracksSpotify(ctx context.Context, params GetChartTracksSpotifyParams) (*GetChartTracksSpotifyResponse, error) {
 	path := "/charts/spotify"
@@ -218,7 +218,7 @@ const (
 	ChartUserTypeTikTokFollowers ChartUserTypeTikTok = "followers"
 )
 
-type GetChartTracksTikTokParams struct {
+type GetChartEntriesTikTokParams struct {
 	ChartType    ChartTypeTikTok
 	Date         time.Time
 	Interval     Optional[ChartIntervalTikTok]
@@ -230,7 +230,7 @@ type GetChartTracksTikTokParams struct {
 	CountryCode  Optional[string]
 }
 
-type GetChartTracksTikTokResponse struct {
+type GetChartEntriesTikTokResponse struct {
 	Obj struct {
 		Length int `json:"length"`
 		Data   []struct {
@@ -264,9 +264,9 @@ type GetChartTracksTikTokResponse struct {
 	} `json:"obj"`
 }
 
-// GetChartTracksTikTok fetches insights for tracks on TikTok Charts.
+// GetChartEntriesTikTok fetches information for some TikTok chart.
 // See https://api.chartmetric.com/apidoc/#api-Charts-GetTiktokTracksChart-1.0.0.
-func (c *Client) GetChartTracksTikTok(ctx context.Context, params GetChartTracksTikTokParams) (*GetChartTracksTikTokResponse, error) {
+func (c *Client) GetChartEntriesTikTok(ctx context.Context, params GetChartEntriesTikTokParams) (*GetChartEntriesTikTokResponse, error) {
 	path := fmt.Sprintf("/charts/tiktok/%s", params.ChartType)
 
 	queryParams := make(map[string]any)
@@ -298,7 +298,7 @@ func (c *Client) GetChartTracksTikTok(ctx context.Context, params GetChartTracks
 		return nil, fmt.Errorf("request with retry: %w", err)
 	}
 
-	var response GetChartTracksTikTokResponse
+	var response GetChartEntriesTikTokResponse
 	if err := json.Unmarshal(responseData, &response); err != nil {
 		return nil, fmt.Errorf("json unmarshal: %w", err)
 	}
