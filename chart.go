@@ -176,10 +176,10 @@ func (c *Client) GetChartTracksSpotify(ctx context.Context, params GetChartTrack
 	queryParams["type"] = params.ChartType
 	queryParams["interval"] = params.Interval
 	if params.Offset != nil {
-		queryParams["offset"] = params.Offset
+		queryParams["offset"] = *params.Offset
 	}
 	if params.Latest != nil {
-		queryParams["latest"] = params.Latest
+		queryParams["latest"] = *params.Latest
 	}
 
 	responseData, err := c.requestWithRetry(ctx, http.MethodGet, path, queryParams, nil)
@@ -272,25 +272,25 @@ func (c *Client) GetChartTracksTikTok(ctx context.Context, params GetChartTracks
 	queryParams := make(map[string]any)
 	queryParams["date"] = params.Date.Format(DateFormat)
 	if params.Interval != nil {
-		queryParams["interval"] = params.Interval
+		queryParams["interval"] = *params.Interval
 	}
 	if params.UserType != nil {
-		queryParams["type"] = params.UserType
+		queryParams["type"] = *params.UserType
 	}
 	if params.Limit != nil {
-		queryParams["limit"] = params.Limit
+		queryParams["limit"] = *params.Limit
 	}
 	if params.Offset != nil {
-		queryParams["offset"] = params.Offset
+		queryParams["offset"] = *params.Offset
 	}
 	if params.Latest != nil {
-		queryParams["latest"] = params.Latest
+		queryParams["latest"] = *params.Latest
 	}
 	if params.CountryChart != nil {
-		queryParams["country_chart"] = params.CountryChart
+		queryParams["country_chart"] = *params.CountryChart
 	}
 	if params.CountryCode != nil {
-		queryParams["code2"] = params.CountryCode
+		queryParams["code2"] = *params.CountryCode
 	}
 
 	responseData, err := c.requestWithRetry(ctx, http.MethodGet, path, queryParams, nil)
