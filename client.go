@@ -30,7 +30,7 @@ type Client struct {
 	httpClient    *http.Client
 	baseURL       string
 	rateLimiter   *rate.Limiter
-	retryAttempts int
+	retryAttempts uint
 	retryDelay    time.Duration
 }
 
@@ -83,7 +83,7 @@ func WithRateLimitPerSec(rateLimitPerSec int) ClientOption {
 
 // WithRetryAttempts allows setting a custom number of retry attempts for requests.
 // Retries are typically triggered by rate limit errors.
-func WithRetryAttempts(retryAttempts int) ClientOption {
+func WithRetryAttempts(retryAttempts uint) ClientOption {
 	return func(c *Client) {
 		c.retryAttempts = retryAttempts
 	}
@@ -113,7 +113,7 @@ func (c *Client) requestWithRetry(ctx context.Context, httpMethod, path string, 
 			return c.request(ctx, httpMethod, path, queryParams, body)
 		},
 		retry.Context(ctx),
-		retry.Attempts(uint(c.retryAttempts)),
+		retry.Attempts(c.retryAttempts),
 		retry.Delay(c.retryDelay),
 		retry.RetryIf(func(err error) bool {
 			return errors.Is(err, errRateLimitExceeded) || errors.Is(err, errTemporarilyUnavailable)
@@ -177,7 +177,7 @@ func (c *Client) resolveAccessToken(ctx context.Context) (string, error) {
 				return c.fetchAccessToken(ctx)
 			},
 			retry.Context(ctx),
-			retry.Attempts(uint(c.retryAttempts)),
+			retry.Attempts(c.retryAttempts),
 			retry.Delay(c.retryDelay),
 			retry.RetryIf(func(err error) bool {
 				return errors.Is(err, errRateLimitExceeded) || errors.Is(err, errTemporarilyUnavailable)
