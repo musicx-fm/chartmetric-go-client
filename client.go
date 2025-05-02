@@ -14,11 +14,12 @@ import (
 
 const (
 	defaultRetryAttempts = 3
-	retryDelay           = 400 * time.Millisecond
+	defaultRetryDelay    = 400 * time.Millisecond
 )
 
 var (
-	errRateLimitExceeded = errors.New("rate limit exceeded")
+	errRateLimitExceeded      = errors.New("rate limit exceeded")
+	errTemporarilyUnavailable = errors.New("temporarily unavailable")
 )
 
 // Client is the Chartmetric API client.
@@ -30,6 +31,7 @@ type Client struct {
 	baseURL       string
 	rateLimiter   *rate.Limiter
 	retryAttempts int
+	retryDelay    time.Duration
 }
 
 type ClientOption func(*Client)
@@ -42,8 +44,10 @@ func NewClient(refreshToken string, options ...ClientOption) *Client {
 		httpClient: &http.Client{
 			Timeout: time.Duration(10) * time.Second,
 		},
-		baseURL:     "https://api.chartmetric.com/api",
-		rateLimiter: rate.NewLimiter(rate.Limit(1), 1),
+		baseURL:       "https://api.chartmetric.com/api",
+		rateLimiter:   rate.NewLimiter(rate.Limit(1), 1),
+		retryAttempts: defaultRetryAttempts,
+		retryDelay:    defaultRetryDelay,
 	}
 
 	for _, option := range options {
@@ -85,6 +89,13 @@ func WithRetryAttempts(retryAttempts int) ClientOption {
 	}
 }
 
+// WithRetryDelay allows setting a custom delay between retry attempts.
+func WithRetryDelay(retryDelay time.Duration) ClientOption {
+	return func(c *Client) {
+		c.retryDelay = retryDelay
+	}
+}
+
 // GetAny is a generic GET request method that can be used to fetch any data from the API.
 // This could be useful for testing. For actual API calls, consider using the specific methods provided by the Client.
 func (c *Client) GetAny(ctx context.Context, path string, queryParams map[string]any) ([]byte, error) {
@@ -102,10 +113,10 @@ func (c *Client) requestWithRetry(ctx context.Context, httpMethod, path string, 
 			return c.request(ctx, httpMethod, path, queryParams, body)
 		},
 		retry.Context(ctx),
-		retry.Attempts(defaultRetryAttempts),
-		retry.Delay(retryDelay),
+		retry.Attempts(uint(c.retryAttempts)),
+		retry.Delay(c.retryDelay),
 		retry.RetryIf(func(err error) bool {
-			return errors.Is(err, errRateLimitExceeded)
+			return errors.Is(err, errRateLimitExceeded) || errors.Is(err, errTemporarilyUnavailable)
 		}),
 	)
 }
@@ -143,6 +154,9 @@ func (c *Client) request(ctx context.Context, httpMethod, path string, queryPara
 	if resp.StatusCode == http.StatusTooManyRequests {
 		return nil, errRateLimitExceeded
 	}
+	if resp.StatusCode == http.StatusServiceUnavailable {
+		return nil, errTemporarilyUnavailable
+	}
 
 	bodyBytes, err := readResponseBody(resp.Body)
 	if err != nil {
@@ -163,10 +177,10 @@ func (c *Client) resolveAccessToken(ctx context.Context) (string, error) {
 				return c.fetchAccessToken(ctx)
 			},
 			retry.Context(ctx),
-			retry.Attempts(defaultRetryAttempts),
-			retry.Delay(retryDelay),
+			retry.Attempts(uint(c.retryAttempts)),
+			retry.Delay(c.retryDelay),
 			retry.RetryIf(func(err error) bool {
-				return errors.Is(err, errRateLimitExceeded)
+				return errors.Is(err, errRateLimitExceeded) || errors.Is(err, errTemporarilyUnavailable)
 			}),
 		)
 		if err != nil {
@@ -198,6 +212,9 @@ func (c *Client) fetchAccessToken(ctx context.Context) (*accessToken, error) {
 
 	if resp.StatusCode == http.StatusTooManyRequests {
 		return nil, errRateLimitExceeded
+	}
+	if resp.StatusCode == http.StatusServiceUnavailable {
+		return nil, errTemporarilyUnavailable
 	}
 
 	bodyBytes, err := readResponseBody(resp.Body)
