@@ -14,7 +14,7 @@ import (
 
 const (
 	defaultRetryAttempts = 3
-	defaultRetryDelay    = 400 * time.Millisecond
+	defaultRetryDelay    = 700 * time.Millisecond
 )
 
 var (
