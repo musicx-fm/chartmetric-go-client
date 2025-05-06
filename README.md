@@ -59,7 +59,7 @@ tiktokChartEntities, err := client.GetChartEntriesTikTok(
 )
 ```
 
-### Given a particular track, fetch the corresponding Track IDs across different platforms
+### Given a particular track, fetch its corresponding Track IDs in different platforms
 
 ```go
 trackIDs, err := client.GetTrackIDs(ctx, chartmetric.TrackPlatformSpotify, "5KSJ9k1FYjFLnIRlJT2wF8")
