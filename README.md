@@ -9,7 +9,7 @@ Golang client for [Chartmetric API](https://api.chartmetric.com/apidoc/).
 ## Installation
 
 ```
-go get -u github.com/musicx-fm/chartmetric-go-client
+go get github.com/musicx-fm/chartmetric-go-client
 ```
 
 ## Usage
