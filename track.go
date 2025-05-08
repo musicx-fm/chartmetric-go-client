@@ -50,7 +50,7 @@ type TrackIDs struct {
 // the track IDs across different platforms for that same track.
 // See https://api.chartmetric.com/apidoc/#api-Track-getTrackIDs.
 func (c *Client) GetTrackIDs(ctx context.Context, platform TrackPlatform, id string) (*TrackIDs, error) {
-	path := fmt.Sprintf("/track/%s/%s/get-ids", platform, url.QueryEscape(id))
+	path := fmt.Sprintf("/track/%s/%s/get-ids", platform, url.PathEscape(id))
 
 	responseData, err := c.requestWithRetry(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
