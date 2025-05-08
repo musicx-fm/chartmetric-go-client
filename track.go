@@ -40,8 +40,8 @@ type TrackIDs struct {
 	SoundCloudIDs  []string `json:"soundcloud_ids"`
 	ShazamIDs      []string `json:"shazam_ids"`
 	TikTokIDs      []string `json:"tiktok_ids"`
-	BeatportIDs    []string `json:"beatport_ids"`
-	QQIDs          []string `json:"qq_ids"`
+	BeatportIDs    []int    `json:"beatport_ids"`
+	QQIDs          []int    `json:"qq_ids"`
 	GeniusIDs      []int    `json:"genius_ids"`
 }
 
