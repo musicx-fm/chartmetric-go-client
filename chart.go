@@ -95,25 +95,27 @@ func (c *Client) GetChartCountries(ctx context.Context, platform ChartPlatform, 
 	return response.Obj.Countries, nil
 }
 
-type ChartTypeSpotify string
+// ==================================================
+
+type ChartTypeTracksSpotify string
 
 const (
-	ChartTypeSpotifyRegional ChartTypeSpotify = "regional"
-	ChartTypeSpotifyViral    ChartTypeSpotify = "viral"
+	ChartTypeTracksSpotifyRegional ChartTypeTracksSpotify = "regional"
+	ChartTypeTracksSpotifyViral    ChartTypeTracksSpotify = "viral"
 )
 
-type ChartIntervalSpotify string
+type ChartIntervalTracksSpotify string
 
 const (
-	ChartIntervalSpotifyDaily  ChartIntervalSpotify = "daily"
-	ChartIntervalSpotifyWeekly ChartIntervalSpotify = "weekly"
+	ChartIntervalTracksSpotifyDaily  ChartIntervalTracksSpotify = "daily"
+	ChartIntervalTracksSpotifyWeekly ChartIntervalTracksSpotify = "weekly"
 )
 
 type GetChartTracksSpotifyParams struct {
 	Date        time.Time
 	CountryCode string
-	Type        ChartTypeSpotify
-	Interval    ChartIntervalSpotify
+	Type        ChartTypeTracksSpotify
+	Interval    ChartIntervalTracksSpotify
 	Offset      Optional[int]
 	Latest      Optional[bool]
 }
@@ -126,40 +128,40 @@ type getChartTracksSpotifyResponse struct {
 }
 
 type ChartTrackSpotify struct {
-	Name                 string           `json:"name"`
-	ISRC                 string           `json:"isrc"`
-	SpotifyTrackID       string           `json:"spotify_track_id"`
-	SpotifyAlbumID       string           `json:"spotify_album_id"`
-	ImageURL             string           `json:"image_url"`
-	SpotifyPopularity    int              `json:"spotify_popularity"`
-	ChartmetricTrackID   int              `json:"cm_track"`
-	SpotifyArtistNames   []string         `json:"spotify_artist_names"`
-	Genre                string           `json:"track_genre"`
-	ChartmetricArtistIDs []int            `json:"cm_artist"`
-	ArtistNames          []string         `json:"artist_names"`
-	CountryCodes         []string         `json:"code2s"`
-	ArtistImages         []string         `json:"artist_images"`
-	ArtistCovers         []string         `json:"artist_covers"`
-	SpotifyArtistIDs     []string         `json:"spotify_artist_ids"`
-	SpotifyTrackIDs      []string         `json:"spotify_track_ids"`
-	SpotifyAlbumIDs      []string         `json:"spotify_album_ids"`
-	SpotifyDurationMs    int              `json:"spotify_duration_ms"`
-	ChartmetricAlbumIDs  []int            `json:"album_ids"`
-	AlbumNames           []string         `json:"album_names"`
-	AlbumUPC             []string         `json:"album_upc"`
-	AlbumLabel           []string         `json:"album_label"`
-	ReleaseDates         []Date           `json:"release_dates"`
-	Rank                 int              `json:"rank"`
-	AddedAt              time.Time        `json:"added_at"`
-	ChartType            ChartTypeSpotify `json:"chart_type"`
-	ChartName            string           `json:"chart_name"`
-	CurrentPlays         int              `json:"current_plays"`
-	CountryCode          string           `json:"code2"`
-	Velocity             float64          `json:"velocity"`
-	PreRank              int              `json:"pre_rank"`
-	PeakRank             int              `json:"peak_rank"`
-	PeakDate             time.Time        `json:"peak_date"`
-	TimeOnChart          int              `json:"time_on_chart"`
+	Name                 string                 `json:"name"`
+	ISRC                 string                 `json:"isrc"`
+	SpotifyTrackID       string                 `json:"spotify_track_id"`
+	SpotifyAlbumID       string                 `json:"spotify_album_id"`
+	ImageURL             string                 `json:"image_url"`
+	SpotifyPopularity    int                    `json:"spotify_popularity"`
+	ChartmetricTrackID   int                    `json:"cm_track"`
+	SpotifyArtistNames   []string               `json:"spotify_artist_names"`
+	Genre                string                 `json:"track_genre"`
+	ChartmetricArtistIDs []int                  `json:"cm_artist"`
+	ArtistNames          []string               `json:"artist_names"`
+	CountryCodes         []string               `json:"code2s"`
+	ArtistImages         []string               `json:"artist_images"`
+	ArtistCovers         []string               `json:"artist_covers"`
+	SpotifyArtistIDs     []string               `json:"spotify_artist_ids"`
+	SpotifyTrackIDs      []string               `json:"spotify_track_ids"`
+	SpotifyAlbumIDs      []string               `json:"spotify_album_ids"`
+	SpotifyDurationMs    int                    `json:"spotify_duration_ms"`
+	ChartmetricAlbumIDs  []int                  `json:"album_ids"`
+	AlbumNames           []string               `json:"album_names"`
+	AlbumUPC             []string               `json:"album_upc"`
+	AlbumLabel           []string               `json:"album_label"`
+	ReleaseDates         []Date                 `json:"release_dates"`
+	Rank                 int                    `json:"rank"`
+	AddedAt              time.Time              `json:"added_at"`
+	ChartType            ChartTypeTracksSpotify `json:"chart_type"`
+	ChartName            string                 `json:"chart_name"`
+	CurrentPlays         int                    `json:"current_plays"`
+	CountryCode          string                 `json:"code2"`
+	Velocity             float64                `json:"velocity"`
+	PreRank              int                    `json:"pre_rank"`
+	PeakRank             int                    `json:"peak_rank"`
+	PeakDate             time.Time              `json:"peak_date"`
+	TimeOnChart          int                    `json:"time_on_chart"`
 	RankStats            struct {
 		Plays     int       `json:"plays"`
 		Rank      int       `json:"rank"`
@@ -196,6 +198,105 @@ func (c *Client) GetChartTracksSpotify(ctx context.Context, params GetChartTrack
 
 	return response.Obj.Data, nil
 }
+
+// ==================================================
+
+type ChartTypeArtistsSpotify string
+
+const (
+	ChartTypeArtistsSpotifyMonthlyListeners ChartTypeArtistsSpotify = "monthly_listeners"
+	ChartTypeArtistsSpotifyPopularity       ChartTypeArtistsSpotify = "popularity"
+	ChartTypeArtistsSpotifyFollowers        ChartTypeArtistsSpotify = "followers"
+	ChartTypeArtistsSpotifyPlaylistCount    ChartTypeArtistsSpotify = "playlist_count"
+	ChartTypeArtistsSpotifyPlaylistReach    ChartTypeArtistsSpotify = "playlist_reach"
+)
+
+type ChartIntervalArtistsSpotify string
+
+const (
+	ChartIntervalArtistsSpotifyDaily   ChartIntervalArtistsSpotify = "daily"
+	ChartIntervalArtistsSpotifyWeekly  ChartIntervalArtistsSpotify = "weekly"
+	ChartIntervalArtistsSpotifyMonthly ChartIntervalArtistsSpotify = "monthly"
+)
+
+type GetChartArtistSpotifyParams struct {
+	Date     time.Time
+	Type     ChartTypeArtistsSpotify
+	Interval ChartIntervalArtistsSpotify
+	Offset   Optional[int]
+	Latest   Optional[bool]
+}
+
+type getChartArtistsSpotifyResponse struct {
+	Obj struct {
+		Length int                  `json:"length"`
+		Data   []ChartArtistSpotify `json:"data"`
+	} `json:"obj"`
+}
+
+type ChartArtistSpotify struct {
+	ID                     int      `json:"id"`
+	Name                   string   `json:"name"`
+	ImageURL               string   `json:"image_url"`
+	ISNI                   string   `json:"isni"`
+	CountryCode            string   `json:"code2"`
+	HometownCity           string   `json:"hometown_city"`
+	CurrentCity            string   `json:"current_city"`
+	Followers              int      `json:"sp_followers"`
+	Popularity             int      `json:"sp_popularity"`
+	MonthlyListeners       int      `json:"sp_monthly_listeners"`
+	DeezerFans             int      `json:"deezer_fans"`
+	Tags                   []string `json:"tags"`
+	SpotifyArtistIDs       []string `json:"spotify_artist_ids"`
+	ITunesArtistIDs        []int    `json:"itunes_artist_ids"`
+	DeezerArtistIDs        []string `json:"deezer_artist_ids"`
+	AmazonArtistIDs        []string `json:"amazon_artist_ids"`
+	ChartmetricArtistRank  int      `json:"cm_artist_rank"`
+	ChartmetricArtistScore float64  `json:"cm_artist_score"`
+	Timestamp              Date     `json:"timestp"`
+	MonthlyPlaylistReach   int      `json:"monthly_playlist_reach"`
+	Rank                   int      `json:"rank"`
+	Change                 string   `json:"change"`
+	Streak                 int      `json:"streak"`
+	PeakDate               Date     `json:"peak_date"`
+	PeakRank               int      `json:"peak_rank"`
+	TimeOnChart            int      `json:"time_on_chart"`
+	RankStats              []struct {
+		Rank int  `json:"rank"`
+		Date Date `json:"date"`
+	} `json:"rankStats"`
+}
+
+// GetChartArtistsSpotify fetches insights for artists on Spotify charts.
+// See https://api.chartmetric.com/apidoc/#api-Charts-GetSpotifyArtistsChart-1.0.0.
+func (c *Client) GetChartArtistsSpotify(ctx context.Context, params GetChartArtistSpotifyParams) ([]ChartArtistSpotify, error) {
+	path := "/charts/spotify/artists"
+
+	queryParams := make(map[string]any)
+	queryParams["date"] = params.Date.Format(DateFormat)
+	queryParams["type"] = params.Type
+	queryParams["interval"] = params.Interval
+	if params.Offset != nil {
+		queryParams["offset"] = *params.Offset
+	}
+	if params.Latest != nil {
+		queryParams["latest"] = *params.Latest
+	}
+
+	responseData, err := c.requestWithRetry(ctx, http.MethodGet, path, queryParams, nil)
+	if err != nil {
+		return nil, fmt.Errorf("request with retry: %w", err)
+	}
+
+	var response getChartArtistsSpotifyResponse
+	if err := json.Unmarshal(responseData, &response); err != nil {
+		return nil, fmt.Errorf("json unmarshal: %w", err)
+	}
+
+	return response.Obj.Data, nil
+}
+
+// ==================================================
 
 type ChartTypeTikTok string
 
