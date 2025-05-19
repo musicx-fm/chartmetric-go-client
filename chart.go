@@ -430,7 +430,7 @@ const (
 
 type GetChartEntriesAppleMusicParams struct {
 	ChartType   ChartTypeAppleMusic
-	Type        ChartTracksTypeAppleMusic
+	Type        Optional[ChartTracksTypeAppleMusic]
 	CountryCode string
 	CityID      Optional[string]
 	Date        time.Time
@@ -450,7 +450,7 @@ type ChartEntryAppleMusic struct {
 	ID                   int       `json:"id"`
 	Name                 string    `json:"name"`
 	ISRC                 string    `json:"isrc"`
-	ITunesAlbumID        []int     `json:"itunes_album_id"`
+	ITunesAlbumID        any       `json:"itunes_album_id"`
 	ComposerName         string    `json:"composer_name"`
 	ImageURL             string    `json:"image_url"`
 	ChartmetricTrackID   int       `json:"cm_track"`
@@ -462,8 +462,8 @@ type ChartEntryAppleMusic struct {
 	ArtistCovers         []string  `json:"artist_covers"`
 	ITunesArtistIDs      []int     `json:"itunes_artist_ids"`
 	ITunesArtistNames    []string  `json:"itunes_artist_names"`
-	ITunesTrackIDs       []int     `json:"itunes_track_ids"`
-	ITunesAlbumIDs       []int     `json:"itunes_album_ids"`
+	ITunesTrackIDs       []string  `json:"itunes_track_ids"`
+	ITunesAlbumIDs       []string  `json:"itunes_album_ids"`
 	Storefronts          []string  `json:"storefronts"`
 	ChartmetricAlbumIDs  []int     `json:"album_ids"`
 	AlbumNames           []string  `json:"album_names"`
@@ -492,7 +492,9 @@ func (c *Client) GetChartEntriesAppleMusic(ctx context.Context, params GetChartE
 	path := fmt.Sprintf("/charts/applemusic/%s", params.ChartType)
 
 	queryParams := make(map[string]any)
-	queryParams["type"] = params.Type
+	if params.Type != nil {
+		queryParams["type"] = *params.Type
+	}
 	queryParams["country_code"] = params.CountryCode
 	if params.CityID != nil {
 		queryParams["city_id"] = *params.CityID
