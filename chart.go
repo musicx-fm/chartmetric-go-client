@@ -410,3 +410,113 @@ func (c *Client) GetChartEntriesTikTok(ctx context.Context, params GetChartEntri
 
 	return response.Obj.Data, nil
 }
+
+// ==================================================
+
+type ChartTypeAppleMusic string
+
+const (
+	ChartTypeAppleMusicAlbums ChartTypeAppleMusic = "albums"
+	ChartTypeAppleMusicTracks ChartTypeAppleMusic = "tracks"
+	ChartTypeAppleMusicVideos ChartTypeAppleMusic = "videos"
+)
+
+type ChartTracksTypeAppleMusic string
+
+const (
+	ChartTracksTypeAppleMusicDaily ChartTracksTypeAppleMusic = "daily"
+	ChartTracksTypeAppleMusicTop   ChartTracksTypeAppleMusic = "top"
+)
+
+type GetChartEntriesAppleMusicParams struct {
+	ChartType   ChartTypeAppleMusic
+	Type        ChartTracksTypeAppleMusic
+	CountryCode string
+	CityID      Optional[string]
+	Date        time.Time
+	Genre       Optional[string]
+	Offset      Optional[int]
+	Latest      Optional[bool]
+}
+
+type getChartEntriesAppleMusicResponse struct {
+	Obj struct {
+		Length int                    `json:"length"`
+		Data   []ChartEntryAppleMusic `json:"data"`
+	} `json:"obj"`
+}
+
+type ChartEntryAppleMusic struct {
+	ID                   int       `json:"id"`
+	Name                 string    `json:"name"`
+	ISRC                 string    `json:"isrc"`
+	ITunesAlbumID        []int     `json:"itunes_album_id"`
+	ComposerName         string    `json:"composer_name"`
+	ImageURL             string    `json:"image_url"`
+	ChartmetricTrackID   int       `json:"cm_track"`
+	TrackGenre           string    `json:"track_genre"`
+	ChartmetricArtistIDs []int     `json:"cm_artist"`
+	ArtistNames          []string  `json:"artist_names"`
+	CountryCodes         []string  `json:"code2s"`
+	ArtistImages         []string  `json:"artist_images"`
+	ArtistCovers         []string  `json:"artist_covers"`
+	ITunesArtistIDs      []int     `json:"itunes_artist_ids"`
+	ITunesArtistNames    []string  `json:"itunes_artist_names"`
+	ITunesTrackIDs       []int     `json:"itunes_track_ids"`
+	ITunesAlbumIDs       []int     `json:"itunes_album_ids"`
+	Storefronts          []string  `json:"storefronts"`
+	ChartmetricAlbumIDs  []int     `json:"album_ids"`
+	AlbumNames           []string  `json:"album_names"`
+	AlbumUPC             []string  `json:"album_upc"`
+	AlbumLabel           []string  `json:"album_label"`
+	ReleaseDates         []Date    `json:"release_dates"`
+	Rank                 int       `json:"rank"`
+	AddedAt              time.Time `json:"added_at"`
+	CountryCode          string    `json:"code2"`
+	Country              string    `json:"country"`
+	ITunes               int       `json:"itunes"`
+	Velocity             float64   `json:"velocity"`
+	PreRank              int       `json:"pre_rank"`
+	PeakRank             int       `json:"peak_rank"`
+	PeakDate             time.Time `json:"peak_date"`
+	TimeOnChart          int       `json:"time_on_chart"`
+	RankStats            struct {
+		Rank      int       `json:"rank"`
+		Timestamp time.Time `json:"timestp"`
+	} `json:"rank_stats"`
+}
+
+// GetChartEntriesAppleMusic fetches insights for albums on Apple Music charts.
+// See https://api.chartmetric.com/apidoc/#api-Charts-GetAppleMusicChart.
+func (c *Client) GetChartEntriesAppleMusic(ctx context.Context, params GetChartEntriesAppleMusicParams) ([]ChartEntryAppleMusic, error) {
+	path := fmt.Sprintf("/charts/applemusic/%s", params.ChartType)
+
+	queryParams := make(map[string]any)
+	queryParams["type"] = params.Type
+	queryParams["country_code"] = params.CountryCode
+	if params.CityID != nil {
+		queryParams["city_id"] = *params.CityID
+	}
+	queryParams["date"] = params.Date.Format(DateFormat)
+	if params.Genre != nil {
+		queryParams["genre"] = *params.Genre
+	}
+	if params.Offset != nil {
+		queryParams["offset"] = *params.Offset
+	}
+	if params.Latest != nil {
+		queryParams["latest"] = *params.Latest
+	}
+
+	responseData, err := c.requestWithRetry(ctx, http.MethodGet, path, queryParams, nil)
+	if err != nil {
+		return nil, fmt.Errorf("request with retry: %w", err)
+	}
+
+	var response getChartEntriesAppleMusicResponse
+	if err := json.Unmarshal(responseData, &response); err != nil {
+		return nil, fmt.Errorf("json unmarshal: %w", err)
+	}
+
+	return response.Obj.Data, nil
+}
