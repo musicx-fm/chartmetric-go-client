@@ -469,6 +469,7 @@ type ChartEntryAppleMusic struct {
 	AlbumNames           []string  `json:"album_names"`
 	AlbumUPC             []string  `json:"album_upc"`
 	AlbumLabel           []string  `json:"album_label"`
+	UPC                  string    `json:"upc"`
 	ReleaseDates         []Date    `json:"release_dates"`
 	Rank                 int       `json:"rank"`
 	AddedAt              time.Time `json:"added_at"`
