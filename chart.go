@@ -487,7 +487,7 @@ type ChartEntryAppleMusic struct {
 	} `json:"rank_stats"`
 }
 
-// GetChartEntriesAppleMusic fetches insights for albums on Apple Music charts.
+// GetChartEntriesAppleMusic fetches information for some Apple Music chart.
 // See https://api.chartmetric.com/apidoc/#api-Charts-GetAppleMusicChart.
 func (c *Client) GetChartEntriesAppleMusic(ctx context.Context, params GetChartEntriesAppleMusicParams) ([]ChartEntryAppleMusic, error) {
 	path := fmt.Sprintf("/charts/applemusic/%s", params.ChartType)
@@ -517,6 +517,108 @@ func (c *Client) GetChartEntriesAppleMusic(ctx context.Context, params GetChartE
 	}
 
 	var response getChartEntriesAppleMusicResponse
+	if err := json.Unmarshal(responseData, &response); err != nil {
+		return nil, fmt.Errorf("json unmarshal: %w", err)
+	}
+
+	return response.Obj.Data, nil
+}
+
+// ==================================================
+
+type ChartTypeAirplay string
+
+const (
+	ChartTypeAirplayTracks  ChartTypeAirplay = "tracks"
+	ChartTypeAirplayArtists ChartTypeAirplay = "artists"
+)
+
+type ChartDurationAirplay string
+
+const (
+	ChartDurationAirplayDaily  ChartDurationAirplay = "daily"
+	ChartDurationAirplayWeekly ChartDurationAirplay = "weekly"
+)
+
+type GetChartEntriesAirplayParams struct {
+	ChartType   ChartTypeAirplay
+	Date        Optional[time.Time]
+	Since       Optional[time.Time]
+	Limit       Optional[int]
+	Duration    ChartDurationAirplay
+	CountryCode Optional[string]
+	Latest      Optional[bool]
+}
+
+type getChartEntriesAirplayResponse struct {
+	Obj struct {
+		Length int                 `json:"length"`
+		Data   []ChartEntryAirplay `json:"data"`
+	} `json:"obj"`
+}
+
+type ChartEntryAirplay struct {
+	ID                      int       `json:"id"`
+	Name                    string    `json:"name"`
+	ImageURL                string    `json:"image_url"`
+	ISNI                    string    `json:"isni"`
+	Code2                   string    `json:"code2"`
+	HometownCity            string    `json:"hometown_city"`
+	CurrentCity             string    `json:"current_city"`
+	SpotifyFollowers        int       `json:"sp_followers"`
+	SpotifyPopularity       int       `json:"sp_popularity"`
+	SpotifyMonthlyListeners int       `json:"sp_monthly_listeners"`
+	DeezerFans              int       `json:"deezer_fans"`
+	Tags                    []string  `json:"tags"`
+	SpotifyArtistIDs        []string  `json:"spotify_artist_ids"`
+	ITunesArtistIDs         []int     `json:"itunes_artist_ids"`
+	DeezerArtistIDs         []string  `json:"deezer_artist_ids"`
+	AmazonArtistIDs         []string  `json:"amazon_artist_ids"`
+	Rank                    int       `json:"rank"`
+	Plays                   int       `json:"plays"`
+	ChartmetricAristId      int       `json:"cm_artist"`
+	AddedAt                 time.Time `json:"added_at"`
+	Velocity                float64   `json:"velocity"`
+	PreRank                 int       `json:"pre_rank"`
+	PeakRank                int       `json:"peak_rank"`
+	PeakDate                time.Time `json:"peak_date"`
+	TimeOnChart             int       `json:"time_on_chart"`
+	RankStats               struct {
+		Rank      int       `json:"rank"`
+		Plays     int       `json:"plays"`
+		Timestamp time.Time `json:"timestp"`
+	} `json:"rank_stats"`
+}
+
+// GetChartEntriesAirplay fetches information for some Airplay chart.
+// See https://api.chartmetric.com/apidoc/#api-Charts-GetAirplayChart.
+func (c *Client) GetChartEntriesAirplay(ctx context.Context, params GetChartEntriesAirplayParams) ([]ChartEntryAirplay, error) {
+	path := fmt.Sprintf("/charts/airplay/%s", params.ChartType)
+
+	queryParams := make(map[string]any)
+	if params.Date != nil {
+		queryParams["date"] = (*params.Date).Format(DateFormat)
+	}
+	if params.Since != nil {
+		queryParams["since"] = (*params.Since).Format(DateFormat)
+	}
+	if params.Limit != nil {
+		queryParams["limit"] = *params.Limit
+	}
+	queryParams["duration"] = params.Duration
+	if params.CountryCode != nil {
+		queryParams["country_code"] = *params.CountryCode
+	}
+	if params.Latest != nil {
+		queryParams["latest"] = *params.Latest
+	}
+
+	responseData, err := c.requestWithRetry(ctx, http.MethodGet, path, queryParams, nil)
+	if err != nil {
+		return nil, fmt.Errorf("request with retry: %w", err)
+	}
+
+	var response getChartEntriesAirplayResponse
 	if err := json.Unmarshal(responseData, &response); err != nil {
 		return nil, fmt.Errorf("json unmarshal: %w", err)
 	}
